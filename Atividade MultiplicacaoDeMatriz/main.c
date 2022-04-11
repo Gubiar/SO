@@ -10,7 +10,7 @@
 #include <sys/time.h>
 
 
-#define N 4 //Numero de linhas e colunas das matrizes
+#define N 3 //Numero de linhas e colunas das matrizes
 
 MPI_Status status;
 
@@ -74,7 +74,9 @@ int main(int argc, char **argv) {
     }
 
 // Determina o numero de linhas da matriz A que será enviada para cada processo secundario
-    linhas = N/contadorProcessosSecundarios;
+    linhas = (N + contadorProcessosSecundarios -1)/contadorProcessosSecundarios;
+
+    printf("\nLinhas %d\n", linhas);
 
 // Variável deslocamento determina o ponto inicial da linha que foi enviada para o processo secundario
     deslocamento = 0;
@@ -116,8 +118,8 @@ int main(int argc, char **argv) {
 
 // Resultado
     printf("\nResult Matrix C = Matrix A * Matrix B:\n\n");
-    for (int i = 0; i<N; i++) {
-      for (int j = 0; j<N; j++)
+    for (int i = 0; i<3; i++) {
+      for (int j = 0; j<3; j++)
         printf("%.0f\t", matrix_c[i][j]);
       printf ("\n");
     }
