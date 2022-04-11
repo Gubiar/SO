@@ -13,9 +13,27 @@
 #define N 3 //Numero de linhas e colunas das matrizes
 
 MPI_Status status;
-
-
 double matrix_a[N][N],matrix_b[N][N],matrix_c[N][N];
+
+
+int lerMatriz(size_t linhas, size_t colunas, int (*a)[colunas], const char* filename) {
+
+    FILE *pf;
+    pf = fopen (filename, "r");
+    if (pf == NULL)
+        return 0;
+
+    for(size_t i = 0; i < linhas; ++i)
+    {
+        for(size_t j = 0; j < colunas; ++j)
+            fscanf(pf, "%d", a[i] + j);
+    }
+
+
+    fclose (pf); 
+    return 1; 
+}
+
 
 int main(int argc, char **argv) {
 
@@ -76,7 +94,7 @@ int main(int argc, char **argv) {
 // Determina o numero de linhas da matriz A que será enviada para cada processo secundario
     linhas = (N + contadorProcessosSecundarios -1)/contadorProcessosSecundarios;
 
-    printf("\nLinhas %d\n", linhas);
+    printf("\nLinhas que serao enviadas para cada processo secundario: %d\n", linhas);
 
 // Variável deslocamento determina o ponto inicial da linha que foi enviada para o processo secundario
     deslocamento = 0;
