@@ -10,6 +10,7 @@ int length;
 } thread_arg, *ptr_thread_arg; //***********************************************
 
 pthread_t threads[2];   //Declaração threads
+pthread_mutex_t mut; 
 int flag[2];
 int turn;
 
@@ -28,10 +29,12 @@ void *thread_func(void *arg){
 
 			flag[0] = 1;
 	   	
-		       while (flag[1] == 1 && turn == 1);
+		    while (flag[1] == 1 && turn == 1);
 	
 
+ 			pthread_mutex_lock(&mut); 
 			printf("Thread par  %d - valor %d\n", (int)pthread_self(),i);
+			pthread_mutex_unlock(&mut);
 
 
 			flag[0] = 0;
@@ -43,11 +46,11 @@ void *thread_func(void *arg){
 
 			flag[1] = 1;
 	   	
-		       while (flag[0] == 1 && turn == 0);
+			while (flag[0] == 1 && turn == 0);
 
-
+ 			pthread_mutex_lock(&mut);
 			printf("Thread impar  %d - valor %d\n", (int)pthread_self(),i);
-
+			pthread_mutex_unlock(&mut);
 
 			flag[1] = 0;
 		        turn = 0;
