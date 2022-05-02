@@ -16,8 +16,7 @@ typedef struct
 pthread_t threads[2]; // Declaração threads
 pthread_mutex_t mut;
 
-void *thread_func(void *arg)
-{
+void *thread_func(void *arg) {
 
 
     ptr_thread_arg targ = (ptr_thread_arg)arg;
@@ -58,23 +57,20 @@ void *thread_func(void *arg)
     }
 }
 
-int main()
-{
+int main() {
 
     thread_arg arguments[2];
     int i;
     turn = 0;
 
-    for (i = 0; i < 2; i++)
-    {
+    for (i = 0; i < 2; i++) {
         arguments[i].id = i;
         arguments[i].length = 10; // Confugurando os parâmetros das threads
 
         pthread_create(&(threads[i]), NULL, thread_func, &(arguments[i])); // Criando as threads
     }
 
-    for (int j = 0; j < 2; j++)
-    {
+    for (int j = 0; j < 2; j++) {
         pthread_join(threads[j], NULL); // Inserir as threads na fila de pronto
     }
 
