@@ -10,17 +10,29 @@
 #define SHM_SIZE 1024
 
 
-const int REP = 5;
+#define REP 5
+
 char dado;
 key_t key;
 int shmid,flagsid;
 char *data;
 int  *flags;
 
+int counter = 0;
+int in = 0;
+int out = 0;
+char buf[REP];
+int i = 0;
+
+
 int producer(int n) {
 
     printf("Producer was born!\n");
-    for(int i = 0; i < REP; i++) { 
+    if(i == REP || in == REP || out == REP){
+        exit(1);
+    }
+
+    for(i; i < REP; i++) { 
 
         flags[0] = 1;
         while(flags[1] && (flags[3] == 1));
@@ -36,8 +48,11 @@ int producer(int n) {
 int consumer(int n) {
 
     printf("Consumer was born!\n");
-    for(int i = 0; i < REP; i++) {
- 	
+    if(i == REP || in == REP || out == REP){
+        exit(1);
+    }
+    for(i; i < REP; i++) {
+
         flags[1] = 1;
         while(flags[0] && (flags[3] == 0));
         dado = data[i];
@@ -51,13 +66,15 @@ int consumer(int n) {
 }
  
 int main() {
+    int counter;
+
     printf("The Producer x Consumer Problem\n");
     int status;
      
     key = ftok("/home", 'A');                      //  Segmento   
     shmid = shmget(key, 1024, 0644 | IPC_CREAT);   //
     data = (malloc(5*sizeof(char)));               //     1        
-    data = shmat(shmid, (void *)0, 0);             //
+    data = shmat(shmid, (void *)0, 0); 
     
     //Peterson
     key = ftok("/home/downloads", 'B');            //  Segmento   
@@ -73,9 +90,22 @@ int main() {
    	
     if(pid == 0){
 
-	    producer(5);	    
+        while(1){
+            while (counter == REP);
+            buf[in] = producer(5);
+            in = ++in % REP;	
+            counter++; 
+        } 
+          
     }else{
-        consumer(5);
+
+        while(1){
+            while (counter == 0);
+            consumer(buf[out]); 
+            out = ++out % REP;
+            counter--;
+        }
+        // consumer(5);
         
         shmdt(data);                              //segmento 3  
         shmctl(shmid, IPC_RMID, NULL);            //

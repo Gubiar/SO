@@ -25,26 +25,30 @@ int shmid,flagsid;
 char *data;
 int turn;
 
-char letraDaVez;
+int counter = 0;
+int in = 0;
+int out = 0;
+char buf[REP];
 
 
 pthread_t threads[2]; // Declaração threads
 pthread_mutex_t mut;
 
 
-void producer(int n) {
+int producer(int n) {
 
     data[n] = (char) n + 0x61;	
     printf("Stored... %c \n", data[n]);
-    letraDaVez = data[n];
+    return n;
     	
 }
  
-void consumer(int n) {
+int consumer(int n) {
     
     dado = data[n];
     data[n] = ' ';  
     printf("Consumed... %c \n", dado);
+    return n;
  
 }
 
@@ -61,7 +65,12 @@ void *thread_func(void *arg) {
             pthread_mutex_lock(&mut);
             if (turn == 0)
             {
-                producer(i);
+                while(1){
+                    while (counter == REP);
+                    buf[in] = producer(i);
+                    in = ++in % REP;	
+                    counter++; 
+                } 
                 turn = 1;
             }else{
                 i--;
@@ -75,7 +84,13 @@ void *thread_func(void *arg) {
 
             if (turn == 1)
             {
-                consumer(i);
+                while(1){
+                    while (counter == 0);
+                    consume (i); 
+                    out = ++out % REP;
+                    counter--; 
+                } 
+                // consumer(i);
                 turn = 0;
             }else{
                 i--;
